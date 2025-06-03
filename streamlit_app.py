@@ -1,6 +1,7 @@
 # Import python packages
 import streamlit as st
 import requests
+import pandas
 from snowflake.snowpark.functions import col
 
 # Write directly to the app
@@ -12,6 +13,10 @@ my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT
 
 title = st.text_input("Name on Smoothie")
 st.write("The name on your Smoothie will be: ", title)
+
+pd_df=my_dataframe.to_pandas()
+st.dataframe(pd_DF)
+st.stop()
 
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients: ',
