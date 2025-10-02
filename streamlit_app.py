@@ -1,23 +1,25 @@
 # Import python packages
 import streamlit as st
-import requests
-import pandas
 from snowflake.snowpark.functions import col
-from snowflake.snowpark.context import get_active_session
 
 # Write directly to the app
 st.title(f":cup_with_straw: Customize Your Smoothie!:cup_with_straw:")
 st.write(
-  """Choose the fruits you want in your custom Smoothie!
-  """
+    """Choose the fruits you want in your custom Smoothie!
+    """
 )
 
 name_on_order = st.text_input("Name on Smoothie:")
 st.write("The name on your Smoothie will be: ", name_on_order)
 
-session = get_active_session()
+# Get the Snowpark session object from the Streamlit connection
+cnx = st.connection("snowflake")
+session = cnx.session 
+
+# Query the fruit options table
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 
+# Create the multiselect widget
 ingredients_list = st.multiselect(
     "Choose up to 5 ingredients:",
     my_dataframe, 
@@ -28,9 +30,11 @@ if ingredients_list:
     
     ingredients_string = ''
 
+    # Build the ingredients string
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
 
+    # Build the insert statement
     my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
             values ('""" + ingredients_string + """','"""+name_on_order+ """')"""
 
