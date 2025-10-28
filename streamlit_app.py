@@ -31,17 +31,16 @@ ingredients_list = st.multiselect(
 )
 
 if ingredients_list:
-    ingredients_string = ''
-    for fruit_chosen in ingredients_list:
-        ingredients_string += fruit_chosen + ' '
+    # Join the list of selected fruits into a single space-separated string
+    ingredients_string = " ".join(ingredients_list)
 
-    # Your INSERT statement is already correctly qualified, which is good!
+    # Use %s placeholders for values
     my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
-            values ('""" + ingredients_string + """','"""+name_on_order+ """')"""
+                         values (%s, %s)"""
 
     time_to_insert = st.button('Submit Order')
 
     if time_to_insert:
-        # This should now work because the session context is set
-        session.sql(my_insert_stmt).collect()
+        # Pass the actual values in the 'params' argument
+        session.sql(my_insert_stmt, params=[ingredients_string, name_on_order]).collect()
         st.success(f"Your Smoothie is ordered, {name_on_order}!", icon="✅")
