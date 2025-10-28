@@ -17,8 +17,11 @@ st.write("The name on your Smoothie will be: ", name_on_order)
 cnx = st.connection("snowflake")
 session = cnx.session() 
 
+session.use_database("SMOOTHIES")
+session.use_schema("PUBLIC")
+
 # Query the fruit options table
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+my_dataframe = session.table("fruit_options").select(col('FRUIT_NAME'))
 
 # Create the multiselect widget
 ingredients_list = st.multiselect(
@@ -28,20 +31,17 @@ ingredients_list = st.multiselect(
 )
 
 if ingredients_list:
-    
     ingredients_string = ''
-
-    # Build the ingredients string
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
 
-    # Build the insert statement
+    # Your INSERT statement is already correctly qualified, which is good!
     my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
             values ('""" + ingredients_string + """','"""+name_on_order+ """')"""
 
     time_to_insert = st.button('Submit Order')
-    
+
     if time_to_insert:
+        # This should now work because the session context is set
         session.sql(my_insert_stmt).collect()
         st.success(f"Your Smoothie is ordered, {name_on_order}!", icon="✅")
-
