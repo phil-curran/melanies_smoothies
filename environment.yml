@@ -1,7 +1,10 @@
 name: app_environment
 channels:
+  - defaults  # Add this line
   - snowflake
 dependencies:
   - python=3.10
-  - snowflake-snowpark-python=
-  - streamlit=
+  - snowflake-snowpark-python
+  - streamlit
+  - pandas
+  - requests
