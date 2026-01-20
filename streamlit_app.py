@@ -35,11 +35,11 @@ if ingredients_list:
 
     # Use %s placeholders for values
     my_insert_stmt = """ insert into smoothies.public.orders(ingredients, name_on_order)
-                         values (%s, %s)"""
+        values ('""" + ingredients_string + """', '""" + name_on_order + """')"""
 
     time_to_insert = st.button('Submit Order')
 
+    # 2. Execute the statement WITHOUT the params argument
     if time_to_insert:
-        # Pass the actual values in the 'params' argument
-        session.sql(my_insert_stmt, params=[ingredients_string, name_on_order]).collect()
-        st.success(f"Your Smoothie is ordered, {name_on_order}!", icon="✅")
+        session.sql(my_insert_stmt).collect()
+        st.success(f'Your Smoothie is ordered, {name_on_order}!', icon="✅")
